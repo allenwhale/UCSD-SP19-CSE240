@@ -53,6 +53,8 @@ extern int verbose;
 
 // Initialize the predictor
 //
+void gshare_init();
+void tournament_init();
 void init_predictor();
 
 // Make a prediction for conditional branch instruction at PC 'pc'

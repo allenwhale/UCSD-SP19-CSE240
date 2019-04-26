@@ -1,3 +1,4 @@
 *.o
 src/predictor
 .vscode/
+.mypy_cache/

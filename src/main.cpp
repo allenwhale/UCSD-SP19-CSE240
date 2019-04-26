@@ -63,6 +63,7 @@ int read_branch(uint32_t *pc, uint8_t *outcome) {
     if (getline(&buf, &len, stream) == -1) {
         return 0;
     }
+    // printf("g %s\n", buf);
 
     uint32_t tmp;
     sscanf(buf, "0x%x %d\n", pc, &tmp);
