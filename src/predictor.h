@@ -69,6 +69,8 @@ uint8_t make_prediction(uint32_t pc);
 // indicates that the branch was not taken)
 //
 void gshare_train(uint32_t pc, uint8_t outcome);
+void tournament_train(uint32_t pc, uint8_t outcome);
+void custom_train(uint32_t pc, uint8_t outcome);
 void train_predictor(uint32_t pc, uint8_t outcome);
 
 #endif

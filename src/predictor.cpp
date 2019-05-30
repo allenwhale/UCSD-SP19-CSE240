@@ -6,11 +6,12 @@
 //  described in the README                               //
 //========================================================//
 #include "predictor.h"
+#include "tage.h"
 #include <algorithm>
+#include <map>
 #include <stdio.h>
 #include <string.h>
 using namespace std;
-
 //
 // TODO:Student Information
 //
@@ -38,6 +39,7 @@ int verbose;
 char *gTable, *lTable, *choiceTable;
 
 uint32_t gHistory, *lHistory;
+tage_predictor_t tage;
 //
 // TODO: Add your own Branch Predictor data structures here
 //
@@ -79,6 +81,7 @@ void init_predictor() {
         tournament_init();
         break;
     case CUSTOM:
+        tage.init();
     default:
         break;
     }
@@ -91,8 +94,8 @@ void init_predictor() {
 // indicates a prediction of not taken
 //
 uint8_t gshare_predictor(uint32_t pc) {
-    return gTable[(pc ^ gHistory) & ((1 << ghistoryBits) - 1)] > 1 ? TAKEN
-                                                                   : NOTTAKEN;
+    uint32_t idx = (pc ^ gHistory) & ((1 << ghistoryBits) - 1);
+    return gTable[idx] > 1 ? TAKEN : NOTTAKEN;
 }
 uint8_t tournament_predictor(uint32_t pc) {
     uint8_t pred;
@@ -105,6 +108,7 @@ uint8_t tournament_predictor(uint32_t pc) {
     }
     return pred > 1 ? TAKEN : NOTTAKEN;
 }
+uint8_t custom_predictor(uint32_t pc) { return tage.predict(pc); }
 uint8_t make_prediction(uint32_t pc) {
     //
     // TODO: Implement prediction scheme
@@ -119,6 +123,7 @@ uint8_t make_prediction(uint32_t pc) {
     case TOURNAMENT:
         return tournament_predictor(pc);
     case CUSTOM:
+        return custom_predictor(pc);
     default:
         break;
     }
@@ -163,6 +168,7 @@ void tournament_train(uint32_t pc, uint8_t outcome) {
         ((lHistory[pc & ((1 << pcIndexBits) - 1)] << 1) | outcome) &
         ((1 << lhistoryBits) - 1);
 }
+void custom_train(uint32_t pc, uint8_t outcome) { tage.train(pc, outcome); }
 void train_predictor(uint32_t pc, uint8_t outcome) {
     //
     // TODO: Implement Predictor training
@@ -175,6 +181,8 @@ void train_predictor(uint32_t pc, uint8_t outcome) {
         tournament_train(pc, outcome);
         break;
     case CUSTOM:
+        custom_train(pc, outcome);
+        break;
     default:
         break;
     }
